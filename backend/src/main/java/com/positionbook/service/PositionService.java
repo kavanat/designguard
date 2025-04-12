@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 public class PositionService {
@@ -40,11 +39,14 @@ public class PositionService {
 
     private void updatePosition(TradeEvent event) {
         String key = getPositionKey(event.getAccount(), event.getSecurity());
-        Position position = positions.computeIfAbsent(key, k -> Position.builder()
-                .account(event.getAccount())
-                .security(event.getSecurity())
-                .totalQuantity(0L)
-                .build());
+        Position position = positions.computeIfAbsent(key, k -> {
+            Position newPosition = new Position();
+            newPosition.setAccount(event.getAccount());
+            newPosition.setSecurity(event.getSecurity());
+            newPosition.setTotalQuantity(0L);
+            newPosition.setActiveEvents(new ArrayList<>());
+            return newPosition;
+        });
 
         long quantityChange = event.getAction() == TradeEvent.TradeAction.BUY ? 
             event.getQuantity() : -event.getQuantity();
