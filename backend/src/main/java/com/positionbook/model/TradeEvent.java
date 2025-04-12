@@ -12,14 +12,11 @@ public class TradeEvent {
     @NotNull
     private TradeAction action;
 
-    @NotNull
     private String account;
 
-    @NotNull
     private String security;
 
     @NotNull
-    @Positive
     private Long quantity;
 
     private boolean active = true;

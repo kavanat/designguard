@@ -24,8 +24,31 @@ public class PositionService {
         if (event.getAction() == TradeEvent.TradeAction.CANCEL) {
             cancelEvent(event.getId());
         } else {
+            validateEvent(event);
             events.put(event.getId(), event);
             updatePosition(event);
+        }
+    }
+
+    private void validateEvent(TradeEvent event) {
+        if (event.getAction() == TradeEvent.TradeAction.SELL) {
+            String key = getPositionKey(event.getAccount(), event.getSecurity());
+            Position position = positions.get(key);
+            
+            if (position == null) {
+                throw new IllegalStateException(
+                    String.format("Cannot SELL security %s: no position found for account %s", 
+                        event.getSecurity(), event.getAccount())
+                );
+            }
+
+            long availableQuantity = position.getTotalQuantity();
+            if (availableQuantity < event.getQuantity()) {
+                throw new IllegalStateException(
+                    String.format("Cannot SELL %d units of %s: only %d units available in account %s", 
+                        event.getQuantity(), event.getSecurity(), availableQuantity, event.getAccount())
+                );
+            }
         }
     }
 
@@ -53,6 +76,11 @@ public class PositionService {
         
         position.setTotalQuantity(position.getTotalQuantity() + quantityChange);
         position.getActiveEvents().add(event);
+
+        // Remove position if quantity becomes zero
+        if (position.getTotalQuantity() == 0) {
+            positions.remove(key);
+        }
     }
 
     private void updatePositionAfterCancel(TradeEvent event) {
@@ -65,7 +93,7 @@ public class PositionService {
             position.setTotalQuantity(position.getTotalQuantity() + quantityChange);
             position.getActiveEvents().removeIf(e -> e.getId().equals(event.getId()));
             
-            if (position.getActiveEvents().isEmpty()) {
+            if (position.getActiveEvents().isEmpty() || position.getTotalQuantity() == 0) {
                 positions.remove(key);
             }
         }
