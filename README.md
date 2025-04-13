@@ -26,7 +26,7 @@ position-book-system/
 - Real-time position tracking
 - Support for BUY, SELL, and CANCEL trade events
 - In-memory position book management
-- REST API endpoints
+- REST API endpoints with Swagger documentation
 - Modern React UI with Material-UI
 - Auto-refreshing position summary
 - Form validation
@@ -78,7 +78,22 @@ The backend will start on http://localhost:8080
 
 The frontend will start on http://localhost:3000
 
+## API Documentation
+
+The application includes comprehensive API documentation using Swagger (OpenAPI). You can access the documentation through:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
+The Swagger UI provides:
+- Interactive API documentation
+- Try-it-out functionality for testing endpoints
+- Detailed request/response schemas
+- Authentication information (if applicable)
+
 ## API Endpoints
+
+All API endpoints are documented in the Swagger UI. Here are some key endpoints:
 
 ### POST /api/events
 Submit one or more trade events.
