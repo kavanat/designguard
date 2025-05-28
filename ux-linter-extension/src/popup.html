@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UX Linter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>UX Linter</h1>
+      <div class="stats">
+        <span id="violation-count">0</span> issues found
+      </div>
+    </header>
+    
+    <div class="violations-container">
+      <div class="violations-list" id="violations-list">
+        <!-- Violations will be inserted here -->
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="refresh-btn" class="btn">Refresh</button>
+      <button id="clear-btn" class="btn">Clear Highlights</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
