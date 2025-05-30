@@ -1,0 +1,105 @@
+
+## 🛡️ DesignGuard – Bookmarkable UX Linter for Design System Violations
+
+---
+
+### 📌 Overview
+
+{panel\:title=Overview|borderStyle=solid|borderColor=#ccc|titleBGColor=#f7f7f7}
+**DesignGuard** is a lightweight, no-install UX linter built for secure enterprise environments where browser extensions are blocked. It allows developers to define custom design rules and generate a bookmarklet script that highlights violations in any live web application. It works with **any design system**—SALT UI, Material UI, Bootstrap, or custom.
+{panel}
+
+---
+
+### 🎯 Problem Statement
+
+{panel\:title=The Problem|borderStyle=dashed|titleBGColor=#fff0f0}
+Developers often misuse design components or miss UX rules due to lack of feedback. In locked-down enterprise environments, extensions are blocked, leaving no real-time linting option.
+{panel}
+
+---
+
+### 💡 Solution Summary
+
+{panel\:title=How DesignGuard Solves It|borderStyle=solid|titleBGColor=#f0fff0}
+
+* Define rules visually in a browser-based UI
+* Generate a secure, copy-pasteable JavaScript bookmarklet
+* Run the script on any web app to see UX violations highlighted
+* Works completely offline, with no external tools or install
+  {panel}
+
+---
+
+### ⚙️ Tech Architecture
+
+|| Component || Technology || Description ||
+\| Rule Builder UI | HTML + JS | Create rule sets visually |
+\| Rule Engine | JS DOM Scanner | Finds violations in live DOM |
+\| Output Generator | JS Composer | Converts rules into bookmarklets |
+\| Execution Layer | JS Bookmarklet | Injects violation tooltips |
+\| Deployment | Internal Hosting | Fully offline and secure |
+
+---
+
+### 🧩 Key Features
+
+{panel\:title=Highlights|borderStyle=solid|titleBGColor=#e6f0ff}
+
+* Real-time DOM-based linting
+* Runs in secure, extension-blocked environments
+* Works with any design system (SALT, Material, Bootstrap, etc.)
+* Custom rule builder
+* Lightweight – no backend or cloud infra needed
+  {panel}
+
+---
+
+### 📈 Business Impact
+
+|| Area || Impact ||
+\| Developer Experience | Real-time feedback, UX ownership |
+\| Design Adoption | Reinforces consistent design |
+\| QA Process | Reduces UI issues during handoff |
+\| Scalability | Easy to scale across teams without installs |
+
+---
+
+### 🧭 Roadmap
+
+{code}
+\[x] Bookmarklet script generation
+\[x] Rule builder UI
+\[ ] Rule import/export
+\[ ] VSCode integration
+\[ ] Auto-fix suggestions
+\[ ] AI rule recommender
+\[ ] Rule libraries per team
+{code}
+
+---
+
+### 🖼️ System Flow Diagram
+
+Use this **Mermaid chart** (if enabled in your Confluence instance):
+
+{code\:mermaid}
+flowchart TD
+A\[Developer opens Rule Builder] --> B\[Defines CSS selector + label]
+B --> C\[Generates Bookmarklet Script]
+C --> D\[Adds Bookmark to Browser]
+D --> E\[Clicks Bookmark on Internal App]
+E --> F\[Script Scans DOM]
+F --> G\[Highlights Violations with Tooltips]
+{code}
+
+---
+
+### 🧪 Sample Rules
+
+|| CSS Selector || Message ||
+\| `button:not([aria-label])` | Missing ARIA label |
+\| `.btn.red` | Unauthorized color |
+\| `h1 + h3` | Skipped heading level |
+\| `div[style*="font-size:"]` | Inline font-size used |
+
