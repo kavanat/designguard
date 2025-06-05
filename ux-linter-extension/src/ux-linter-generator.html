@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Linter Generator</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.5;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .rules-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .rule-item {
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .rule-item:hover {
+            border-color: var(--gray-300);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-category {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .rule-text {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin: 0;
+        }
+
+        .delete-btn {
+            color: var(--danger);
+            background: none;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .bookmarklet-container {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+        }
+
+        .script-block {
+            background: var(--gray-800);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            position: relative;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .script-code {
+            color: var(--gray-100);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            white-space: pre;
+            word-break: break-all;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: var(--gray-900);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .script-code .keyword { color: #ff79c6; }
+        .script-code .string { color: #f1fa8c; }
+        .script-code .comment { color: #6272a4; }
+        .script-code .function { color: #8be9fd; }
+        .script-code .number { color: #bd93f9; }
+        .script-code .operator { color: #ff79c6; }
+        .script-code .property { color: #50fa7b; }
+
+        .script-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: var(--gray-700);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-600);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .copy-success {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .copy-success.visible {
+            opacity: 1;
+        }
+
+        .script-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .script-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .script-info {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.5rem;
+        }
+
+        .script-tools {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .script-tool-btn {
+            padding: 0.5rem;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--gray-700);
+            transition: all 0.2s;
+        }
+
+        .script-tool-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        .script-tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .script-format-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .format-option {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .format-option:hover {
+            background: var(--gray-200);
+        }
+
+        .format-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .empty-state-text {
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: var(--success);
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Add New Rule</h1>
+            </div>
+            <div class="card-body">
+                <form id="ruleForm">
+                    <div class="form-group">
+                        <label class="form-label" for="category">Category</label>
+                        <select class="form-select" id="category" required>
+                            <option value="">Select a category</option>
+                            <optgroup label="Foundation">
+                                <option value="Accessibility">Accessibility</option>
+                                <option value="Color">Color</option>
+                                <option value="Typography">Typography</option>
+                                <option value="Iconography">Iconography</option>
+                                <option value="Spot Illustrations">Spot Illustrations</option>
+                                <option value="Spacing and Layout">Spacing and Layout</option>
+                                <option value="Content and Writing">Content and Writing</option>
+                                <option value="Motion and Animation">Motion and Animation</option>
+                            </optgroup>
+                            <optgroup label="Components">
+                                <option value="Cards and Containers">Cards and Containers</option>
+                                <option value="Charts and Data Visualization">Charts and Data Visualization</option>
+                                <option value="Forms and Inputs">Forms and Inputs</option>
+                                <option value="Navigation and Search">Navigation and Search</option>
+                                <option value="Tables and Grids">Tables and Grids</option>
+                                <option value="Text and Messaging">Text and Messaging</option>
+                                <option value="Advanced Components">Advanced Components</option>
+                            </optgroup>
+                            <optgroup label="Patterns">
+                                <option value="Card Preview">Card Preview</option>
+                                <option value="Context Header">Context Header</option>
+                                <option value="Dashboard Grid">Dashboard Grid</option>
+                                <option value="Empty States">Empty States</option>
+                                <option value="Error States">Error States</option>
+                                <option value="Grid with fly-in pattern">Grid with fly-in pattern</option>
+                                <option value="Information Summary">Information Summary</option>
+                                <option value="Scrollable Side Menu">Scrollable Side Menu</option>
+                                <option value="Scrolling">Scrolling</option>
+                                <option value="Side Navigation">Side Navigation</option>
+                                <option value="Single Page Form">Single Page Form</option>
+                                <option value="Status Check List">Status Check List</option>
+                                <option value="Summary Card Filter">Summary Card Filter</option>
+                                <option value="Summary Filter Menu Grid">Summary Filter Menu Grid</option>
+                                <option value="Tab Selection Grid">Tab Selection Grid</option>
+                                <option value="Workflow">Workflow</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rule">Rule</label>
+                        <input type="text" class="form-control" id="rule" placeholder="Enter your rule" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="description">Description</label>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Enter rule description" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Rule</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Rules List</h1>
+            </div>
+            <div class="card-body">
+                <div id="rulesList" class="rules-list">
+                    <!-- Rules will be added here -->
+                </div>
+                <div class="bookmarklet-container">
+                    <div class="script-header">
+                        <div>
+                            <h3 class="script-title">Generated Script</h3>
+                            <div class="script-info">Click "Generate Script" to create your UX linter</div>
+                        </div>
+                        <div class="script-tools">
+                            <button class="script-tool-btn" id="minifyBtn" title="Minify Script">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            <button class="script-tool-btn" id="formatBtn" title="Format Script">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 6h16M4 12h8M4 18h12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="script-format-options">
+                        <span class="format-option active" data-format="readable">Readable</span>
+                        <span class="format-option" data-format="minified">Minified</span>
+                        <span class="format-option" data-format="bookmarklet">Bookmarklet</span>
+                    </div>
+                    <div class="script-block">
+                        <pre class="script-code" id="scriptCode">// Click "Generate Script" to create your UX linter</pre>
+                        <div class="copy-success" id="copySuccess">Copied!</div>
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn btn-primary" id="generateScriptBtn">Generate Script</button>
+                        <button class="btn btn-secondary" id="copyScriptBtn">Copy Script</button>
+                        <button class="btn btn-outline" id="downloadScriptBtn">Download Script</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default rules
+        const defaultRules = [
+            {
+                category: 'Spacing & Layout',
+                title: 'Button size',
+                desc: 'Button size should be at least 44x44 pixels.'
+            },
+            {
+                category: 'Content & Writing',
+                title: 'Alt text',
+                desc: 'Images should have alt text.'
+            },
+            {
+                category: 'Spacing & Layout',
+                title: 'Text contrast',
+                desc: 'Text should have sufficient contrast.'
+            }
+        ];
+
+        // Load user rules from localStorage
+        function loadUserRules() {
+            const rules = localStorage.getItem('uxLinterUserRules');
+            return rules ? JSON.parse(rules) : [];
+        }
+        function saveUserRules(rules) {
+            localStorage.setItem('uxLinterUserRules', JSON.stringify(rules));
+        }
+
+        // Render all rules
+        function renderRules() {
+            const rulesList = document.getElementById('rulesList');
+            rulesList.innerHTML = '';
+            const allRules = [...defaultRules, ...loadUserRules()]
+                .filter(rule =>
+                    !(rule.title && rule.title.includes('Spacing w3rwr')) &&
+                    !(rule.desc && rule.desc.includes('Spacing w3rwr')) &&
+                    !(rule.title && rule.title.includes('Patterns Test: Spacing')) &&
+                    !(rule.desc && rule.desc.includes('Patterns Test: Spacing'))
+                );
+            allRules.forEach(rule => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="rule-category">${escapeHtml(rule.category)}</span> <span class="rule-text">${escapeHtml(rule.title)}</span>: <span class="rule-text">${escapeHtml(rule.desc)}</span>`;
+                rulesList.appendChild(li);
+            });
+        }
+
+        // Escape HTML for safe display
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, function(m) {
+                return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+            });
+        }
+
+        // Add rule form
+        const form = document.getElementById('ruleForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const category = document.getElementById('category').value;
+            const title = document.getElementById('rule').value;
+            const desc = document.getElementById('description').value;
+            const userRules = loadUserRules();
+            userRules.push({ category, title, desc });
+            saveUserRules(userRules);
+            renderRules();
+            form.reset();
+        });
+
+        // Script formatting functions
+        function formatScript(script, format) {
+            switch(format) {
+                case 'minified':
+                    return script
+                        .replace(/\/\/[^\n]*\n/g, '')
+                        .replace(/\n/g, '')
+                        .replace(/\s{2,}/g, ' ')
+                        .replace(/"/g, '\"');
+                case 'bookmarklet':
+                    return 'javascript:(function(){' + 
+                        script
+                            .replace(/\/\/[^\n]*\n/g, '')
+                            .replace(/\n/g, '')
+                            .replace(/\s{2,}/g, ' ')
+                            .replace(/"/g, '\"') +
+                        '})()';
+                default:
+                    return script;
+            }
+        }
+
+        function highlightSyntax(code) {
+            // First escape any HTML special characters
+            code = code.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#039;');
+            
+            // Then apply syntax highlighting
+            return code
+                .replace(/\b(const|let|var|function|return|if|else|for|while|in|of)\b/g, '<span class="keyword">$1</span>')
+                .replace(/(['"])(.*?)\1/g, '<span class="string">$1$2$1</span>')
+                .replace(/\/\/.*$/gm, '<span class="comment">$&</span>')
+                .replace(/\b(function)\s+(\w+)/g, '<span class="keyword">$1</span> <span class="function">$2</span>')
+                .replace(/\b(\d+)\b/g, '<span class="number">$1</span>')
+                .replace(/([=!<>+\-*/%&|^~?:])/g, '<span class="operator">$1</span>')
+                .replace(/(\w+):/g, '<span class="property">$1</span>:');
+        }
+
+        let currentScript = ''; // Store the current script content
+
+        // Generate script
+        document.getElementById('generateScriptBtn').addEventListener('click', function() {
+            const allRules = [...defaultRules, ...loadUserRules()];
+            const safeRules = allRules.map(rule => ({
+                category: rule.category.replace(/[\\`]/g, '\\$&').replace(/\n/g, '\\n'),
+                title: rule.title.replace(/[\\`]/g, '\\$&').replace(/\n/g, '\\n'),
+                desc: rule.desc.replace(/[\\`]/g, '\\$&').replace(/\n/g, '\\n')
+            }));
+
+            currentScript = `// UX Linter Generated Script
+const rules = ${JSON.stringify(safeRules, null, 2)};
+
+const violations = [];
+const seen = new WeakMap();
+
+function isReallyVisible(el) {
+  if (!el || !document.body.contains(el) || el.offsetParent === null) return false;
+  var rect = el.getBoundingClientRect();
+  var style = window.getComputedStyle(el);
+  return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none' && style.opacity !== '0';
+}
+
+// Helper to add violation only if not already present for this element and rule
+function addViolation(v) {
+  if (!isReallyVisible(v.element)) return;
+  if (!seen.has(v.element)) seen.set(v.element, new Set());
+  var rulesSet = seen.get(v.element);
+  if (!rulesSet.has(v.rule)) {
+    violations.push(v);
+    rulesSet.add(v.rule);
+  }
+}
+
+// Check button size
+document.querySelectorAll('button, [role="button"], .btn').forEach(function(btn) {
+  if (btn.offsetWidth < 44 || btn.offsetHeight < 44) {
+    addViolation({
+      element: btn,
+      category: 'Spacing & Layout',
+      rule: 'Button size',
+      message: 'Button too small: ' + btn.offsetWidth + 'x' + btn.offsetHeight + 'px',
+      desc: 'Button size should be at least 44x44 pixels.'
+    });
+  }
+});
+
+// Check images for alt text
+document.querySelectorAll('img').forEach(function(img) {
+  if (!img.alt || img.alt.trim() === '') {
+    addViolation({
+      element: img,
+      category: 'Content & Writing',
+      rule: 'Alt text',
+      message: 'Image missing alt text',
+      desc: 'Images should have alt text.'
+    });
+  }
+});
+
+// Simple text contrast check
+document.querySelectorAll('body, body *').forEach(function(el) {
+  if (el.nodeType === 1 && el.offsetParent !== null) {
+    var color = window.getComputedStyle(el).color;
+    var bg = window.getComputedStyle(el).backgroundColor;
+    if ((color === 'rgb(0, 0, 0)' && bg === 'rgb(0, 0, 0)') ||
+        (color === 'rgb(255, 255, 255)' && bg === 'rgb(255, 255, 255)')) {
+      addViolation({
+        element: el,
+        category: 'Spacing & Layout',
+        rule: 'Text contrast',
+        message: 'Possible low contrast text',
+        desc: 'Text should have sufficient contrast.'
+      });
+    }
+  }
+});
+
+(function showPanel() {
+  var existing = document.getElementById("ux-linter-panel");
+  if (existing) existing.remove();
+  var panel = document.createElement('div');
+  panel.id = "ux-linter-panel";
+  panel.style.position = 'fixed';
+  panel.style.top = '0';
+  panel.style.right = '0';
+  panel.style.width = '350px';
+  panel.style.height = '100vh';
+  panel.style.overflowY = 'auto';
+  panel.style.background = '#fff';
+  panel.style.borderLeft = '2px solid #007bff';
+  panel.style.boxShadow = '-2px 0 8px rgba(0,0,0,0.08)';
+  panel.style.zIndex = '999999';
+  panel.style.fontFamily = 'Arial,sans-serif';
+  panel.innerHTML = "<div style=\\"display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#007bff;color:#fff;font-size:18px;font-weight:bold;\\">UX Linter <button id=\\"ux-linter-close\\" style=\\"background:none;border:none;color:#fff;font-size:20px;cursor:pointer;\\">&times;</button></div>";
+  var content = document.createElement('div');
+  content.style.padding = '16px';
+  if (violations.length === 0) {
+    content.innerHTML = '<div style=\\"color:#28a745;font-size:16px;\\">No violations found!</div>';
+  } else {
+    var cats = Array.from(new Set(violations.map(function(v){return v.category;})));
+    cats.forEach(function(cat) {
+      var catViolations = violations.filter(function(v) { return v.category === cat; });
+      if (catViolations.length > 0) {
+        var section = document.createElement('div');
+        section.innerHTML = '<div style=\\"font-size:15px;font-weight:bold;margin:12px 0 8px 0;color:#007bff;\\">' + cat + '</div>';
+        catViolations.forEach(function(v, idx) {
+          var item = document.createElement('div');
+          item.style.marginBottom = '16px';
+          item.style.padding = '10px';
+          item.style.border = '1px solid #eee';
+          item.style.borderRadius = '6px';
+          item.style.cursor = 'pointer';
+          item.innerHTML = '<div style=\\"font-weight:bold;\\">' + v.rule + '</div>' +
+            '<div style=\\"color:#d9534f;\\">' + v.message + '</div>' +
+            '<div style=\\"color:#555;font-size:13px;\\">' + v.desc + '</div>';
+          item.addEventListener('mouseenter', function() {
+            v._prevZ = v.element.style.zIndex;
+            v.element.style.outline = '2px solid red';
+            v.element.style.outlineOffset = '2px';
+            v.element.style.backgroundColor = 'rgba(255,255,0,0.2)';
+            v.element.style.zIndex = '2147483647';
+            v.element.scrollIntoView({behavior: 'smooth', block: 'center'});
+          });
+          item.addEventListener('mouseleave', function() {
+            v.element.style.outline = '';
+            v.element.style.outlineOffset = '';
+            v.element.style.backgroundColor = '';
+            v.element.style.zIndex = v._prevZ || '';
+          });
+          section.appendChild(item);
+        });
+        content.appendChild(section);
+      }
+    });
+  }
+  panel.appendChild(content);
+  document.body.appendChild(panel);
+  document.getElementById("ux-linter-close").onclick = function() {
+    panel.remove();
+  };
+})();`;
+
+            const format = document.querySelector('.format-option.active').dataset.format;
+            const formattedScript = formatScript(currentScript, format);
+            document.getElementById('scriptCode').innerHTML = highlightSyntax(formattedScript);
+        });
+
+        // Format options
+        document.querySelectorAll('.format-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                const format = this.dataset.format;
+                const formattedScript = formatScript(currentScript, format);
+                document.getElementById('scriptCode').innerHTML = highlightSyntax(formattedScript);
+            });
+        });
+
+        // Copy script
+        document.getElementById('copyScriptBtn').addEventListener('click', function() {
+            const format = document.querySelector('.format-option.active').dataset.format;
+            const scriptToCopy = formatScript(currentScript, format);
+            navigator.clipboard.writeText(scriptToCopy).then(() => {
+                const copySuccess = document.getElementById('copySuccess');
+                copySuccess.classList.add('visible');
+                setTimeout(() => {
+                    copySuccess.classList.remove('visible');
+                }, 2000);
+            });
+        });
+
+        // Download script
+        document.getElementById('downloadScriptBtn').addEventListener('click', function() {
+            const format = document.querySelector('.format-option.active').dataset.format;
+            const scriptToDownload = formatScript(currentScript, format);
+            const blob = new Blob([scriptToDownload], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ux-linter.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Initial render
+        renderRules();
+    </script>
+</body>
+</html> 

@@ -1,1 +1,739 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>UX Linter Generator</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><style>.rule-category{border:1px solid #dee2e6;border-radius:4px;padding:15px;margin-bottom:15px}.rule-options{margin-top:10px}</style></head><body>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Linter Generator</title>
+    <link href="lib/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/select2.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: #f8f9fa;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        .card-header:hover {
+            background: #f8f9fa;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .collapse-icon {
+            transition: transform 0.2s ease;
+            color: #666;
+            font-size: 0.8rem;
+        }
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+        .card-body {
+            padding: 0;
+            transition: all 0.3s ease;
+            max-height: 1000px;
+            overflow: hidden;
+        }
+        .card-body.collapsed {
+            max-height: 0;
+            padding: 0;
+        }
+        .rule-category {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+        }
+        .rule-category:last-child {
+            border-bottom: none;
+        }
+        .rule-category h4 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+        .form-check {
+            margin-bottom: 8px;
+        }
+        .form-check-input {
+            cursor: pointer;
+        }
+        .form-check-label {
+            cursor: pointer;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+        .rule-options {
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 2px solid #eee;
+        }
+        .btn-primary {
+            background: #3498db;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-success {
+            background: #2ecc71;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        #generatedScript {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .custom-rule-section {
+            background: #fff;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+        .form-control {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.95rem;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+        .select2-container .select2-selection--single {
+            height: 36px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 34px;
+        }
+        /* Generated Script Section Styles */
+        .script-section {
+            background: #fff;
+            padding: 6px;
+        }
+        .script-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .script-controls .btn {
+            margin: 0;
+            padding: 3px 6px;
+            font-size: 0.8rem;
+        }
+        #generatedScript {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            font-size: 9px;
+            line-height: 1.1;
+            padding: 4px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 3px;
+            width: 100%;
+            height: 60px;
+            overflow-y: auto;
+            white-space: pre;
+            tab-size: 2;
+            display: block;
+            resize: vertical;
+        }
+        .script-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .script-actions .btn {
+            padding: 3px 6px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">UX Linter Generator</h2>
+        
+        <!-- Rule Selection Section -->
+        <div class="card mb-4">
+            <div class="card-header" onclick="toggleSection(this)">
+                <h3>Select Rules</h3>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <!-- Layout & Spacing -->
+                <div class="rule-category mb-3">
+                    <h4>Layout & Spacing</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input category-select" data-category="layout" id="layout-all">
+                        <label class="form-check-label" for="layout-all">Select All</label>
+                    </div>
+                    <div class="rule-options ms-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="buttonSize">
+                            <label class="form-check-label" for="buttonSize">Button Size (44x44px minimum)</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="inconsistentMargins">
+                            <label class="form-check-label" for="inconsistentMargins">Inconsistent Margins</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="inconsistentPadding">
+                            <label class="form-check-label" for="inconsistentPadding">Inconsistent Padding</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="sectionSpacing">
+                            <label class="form-check-label" for="sectionSpacing">Section Spacing</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="overflowingText">
+                            <label class="form-check-label" for="overflowingText">Overflowing Text</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="unalignedElements">
+                            <label class="form-check-label" for="unalignedElements">Unaligned Elements</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="textEdgeSpacing">
+                            <label class="form-check-label" for="textEdgeSpacing">Text Edge Spacing</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="contentCentering">
+                            <label class="form-check-label" for="contentCentering">Content Centering</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="nestedContainers">
+                            <label class="form-check-label" for="nestedContainers">Nested Containers</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="layout" id="gridLayout">
+                            <label class="form-check-label" for="gridLayout">Grid Layout</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typography & Text -->
+                <div class="rule-category mb-3">
+                    <h4>Typography & Text</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input category-select" data-category="typography" id="typography-all">
+                        <label class="form-check-label" for="typography-all">Select All</label>
+                    </div>
+                    <div class="rule-options ms-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="textContrast">
+                            <label class="form-check-label" for="textContrast">Text Contrast</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="textSize">
+                            <label class="form-check-label" for="textSize">Text Size (min 12px)</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="lineHeight">
+                            <label class="form-check-label" for="lineHeight">Line Height</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="lineLength">
+                            <label class="form-check-label" for="lineLength">Line Length</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="fontUsage">
+                            <label class="form-check-label" for="fontUsage">Font Usage</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="textHierarchy">
+                            <label class="form-check-label" for="textHierarchy">Text Hierarchy</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="fontReadability">
+                            <label class="form-check-label" for="fontReadability">Font Readability</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="linkVisibility">
+                            <label class="form-check-label" for="linkVisibility">Link Visibility</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="capitalLetters">
+                            <label class="form-check-label" for="capitalLetters">Capital Letters Usage</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="typography" id="accessibilityFonts">
+                            <label class="form-check-label" for="accessibilityFonts">Accessibility Fonts</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Design -->
+                <div class="rule-category mb-3">
+                    <h4>Visual Design</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input category-select" data-category="visual" id="visual-all">
+                        <label class="form-check-label" for="visual-all">Select All</label>
+                    </div>
+                    <div class="rule-options ms-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="imageQuality">
+                            <label class="form-check-label" for="imageQuality">Image Quality</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="uiClutter">
+                            <label class="form-check-label" for="uiClutter">UI Clutter</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="responsiveDesign">
+                            <label class="form-check-label" for="responsiveDesign">Responsive Design</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="buttonStyle">
+                            <label class="form-check-label" for="buttonStyle">Button Style</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="animationUsage">
+                            <label class="form-check-label" for="animationUsage">Animation Usage</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="colorUsage">
+                            <label class="form-check-label" for="colorUsage">Color Usage</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="colorBlindness">
+                            <label class="form-check-label" for="colorBlindness">Color Blindness</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="scrollingBehavior">
+                            <label class="form-check-label" for="scrollingBehavior">Scrolling Behavior</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="interactionFeedback">
+                            <label class="form-check-label" for="interactionFeedback">Interaction Feedback</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="visual" id="uiStandards">
+                            <label class="form-check-label" for="uiStandards">UI Standards</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interaction & Function -->
+                <div class="rule-category mb-3">
+                    <h4>Interaction & Function</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input category-select" data-category="interaction" id="interaction-all">
+                        <label class="form-check-label" for="interaction-all">Select All</label>
+                    </div>
+                    <div class="rule-options ms-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="navigation">
+                            <label class="form-check-label" for="navigation">Navigation Clarity</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="formValidation">
+                            <label class="form-check-label" for="formValidation">Form Validation</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="focusStates">
+                            <label class="form-check-label" for="focusStates">Focus States</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="keyboardNav">
+                            <label class="form-check-label" for="keyboardNav">Keyboard Navigation</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="loadTime">
+                            <label class="form-check-label" for="loadTime">Load Time</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="modalUsage">
+                            <label class="form-check-label" for="modalUsage">Modal Usage</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="callToAction">
+                            <label class="form-check-label" for="callToAction">Call to Action</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="navigationVisibility">
+                            <label class="form-check-label" for="navigationVisibility">Navigation Visibility</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="userFlow">
+                            <label class="form-check-label" for="userFlow">User Flow</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="interaction" id="autoPlay">
+                            <label class="form-check-label" for="autoPlay">Auto-Play Media</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessibility -->
+                <div class="rule-category mb-3">
+                    <h4>Accessibility</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input category-select" data-category="accessibility" id="accessibility-all">
+                        <label class="form-check-label" for="accessibility-all">Select All</label>
+                    </div>
+                    <div class="rule-options ms-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="altText">
+                            <label class="form-check-label" for="altText">Alt Text</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="formAccessibility">
+                            <label class="form-check-label" for="formAccessibility">Form Accessibility</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="colorAccessibility">
+                            <label class="form-check-label" for="colorAccessibility">Color Accessibility</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="ariaRoles">
+                            <label class="form-check-label" for="ariaRoles">ARIA Roles</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="skipNavigation">
+                            <label class="form-check-label" for="skipNavigation">Skip Navigation</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="errorMessages">
+                            <label class="form-check-label" for="errorMessages">Error Messages</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="contrastRatio">
+                            <label class="form-check-label" for="contrastRatio">Contrast Ratio</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="hoverStates">
+                            <label class="form-check-label" for="hoverStates">Hover States</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="voiceControl">
+                            <label class="form-check-label" for="voiceControl">Voice Control</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input rule-select" data-category="accessibility" id="textResize">
+                            <label class="form-check-label" for="textResize">Text Resize</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Rules Section (dynamic) -->
+                <div class="rule-category mb-3" id="customRulesSection" style="display:none;">
+                    <h4>Custom Rules</h4>
+                    <div class="rule-options ms-4" id="customRulesContainer">
+                        <!-- Custom rules will be appended here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Rule Section -->
+        <div class="card mb-4">
+            <div class="card-header" onclick="toggleSection(this)">
+                <h3>Add Custom Rule</h3>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <form id="customRuleForm" class="custom-rule-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ruleName">Rule Name</label>
+                                <input type="text" class="form-control" id="ruleName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="elementType">Element Type</label>
+                                <select class="form-control" id="elementType" required>
+                                    <option value="">Select Element Type</option>
+                                    <option value="button">Button</option>
+                                    <option value="input">Input</option>
+                                    <option value="img">Image</option>
+                                    <option value="form">Form</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkType">Check Type</label>
+                                <select class="form-control" id="checkType" required>
+                                    <option value="">Select Check Type</option>
+                                    <option value="presence">Presence</option>
+                                    <option value="size">Size</option>
+                                    <option value="style">Style</option>
+                                    <option value="content">Content</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="severity">Severity</label>
+                                <select class="form-control" id="severity" required>
+                                    <option value="warning">Warning</option>
+                                    <option value="error">Error</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="violationMessage">Violation Message</label>
+                        <input type="text" class="form-control" id="violationMessage" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Custom Rule</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Generated Script Section -->
+        <div class="card">
+            <div class="card-header" onclick="toggleSection(this)">
+                <h3>Generated Script</h3>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="script-section">
+                    <div class="script-controls">
+                        <button id="generateScript" style="display: block; margin: 20px auto; padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Generate Script</button>
+                    </div>
+                    <textarea id="generatedScript" class="form-control" rows="8" readonly></textarea>
+                    <div class="script-actions">
+                        <button class="btn btn-success" onclick="copyToClipboard()">Copy to Clipboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/bootstrap.bundle.min.js"></script>
+    <script src="lib/select2.min.js"></script>
+    <script src="ux-linter-generator.js"></script>
+    <script>
+        // Store predefined rules
+        window.predefinedRules = {
+            buttonSize: {
+                selector: 'button, [role="button"], .btn',
+                check: 'element.offsetWidth < 44 || element.offsetHeight < 44',
+                message: 'Button too small',
+                severity: 'error'
+            },
+            textContrast: {
+                selector: 'p, h1, h2, h3, h4, h5, h6, span, a',
+                check: '!element.style.color',
+                message: 'Low contrast',
+                severity: 'error'
+            },
+            altText: {
+                selector: 'img',
+                check: '!element.alt',
+                message: 'Missing alt text',
+                severity: 'error'
+            }
+        };
+
+        function generateSelectedRules() {
+            console.log('Generating selected rules...');
+            const generator = new UXLinterGenerator();
+            const selectedRules = {};
+            
+            document.querySelectorAll('.rule-select:checked').forEach(checkbox => {
+                const ruleId = checkbox.id;
+                if (window.predefinedRules[ruleId]) {
+                    selectedRules[ruleId] = window.predefinedRules[ruleId];
+                }
+            });
+
+            const textarea = document.getElementById('generatedScript');
+            if (Object.keys(selectedRules).length === 0) {
+                textarea.value = 'No rules selected';
+                return;
+            }
+
+            Object.entries(selectedRules).forEach(([name, rule]) => {
+                generator.addRule(name, rule);
+            });
+
+            const script = generator.generateScript();
+            textarea.value = script;
+            textarea.style.display = 'block';
+
+            // Display error messages in the textarea
+            const errorMessages = Object.entries(selectedRules).map(([name, rule]) => {
+                if (name === 'buttonSize') {
+                    return `${name} (${rule.selector}): ${rule.message} - Expected size: 44x44px`;
+                }
+                return `${name} (${rule.selector}): ${rule.message}`;
+            }).join('\n');
+            if (errorMessages) {
+                textarea.value += '\n\nErrors:\n' + errorMessages;
+            }
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event listener to generate button
+            document.getElementById('generateScript').addEventListener('click', function(e) {
+                console.log('Generate Script button clicked');
+                e.preventDefault();
+                generateSelectedRules();
+            });
+
+            // Add change event listeners to all checkboxes
+            document.querySelectorAll('.rule-select, .category-select').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.classList.contains('category-select')) {
+                        const category = this.dataset.category;
+                        const isChecked = this.checked;
+                        document.querySelectorAll(`.rule-select[data-category="${category}"]`).forEach(ruleCheckbox => {
+                            ruleCheckbox.checked = isChecked;
+                        });
+                    }
+                });
+            });
+
+            // Initialize collapse states
+            document.querySelectorAll('.card').forEach(card => {
+                const sectionId = card.querySelector('h3').textContent.toLowerCase().replace(/\s+/g, '-');
+                const isCollapsed = localStorage.getItem(`section-${sectionId}`) === 'true';
+                
+                if (isCollapsed) {
+                    card.classList.add('collapsed');
+                    card.querySelector('.card-body').classList.add('collapsed');
+                }
+            });
+        });
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('generatedScript');
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const copyButton = document.querySelector('.btn-success');
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 2000);
+        }
+
+        // Update collapse/expand functionality
+        function toggleSection(header) {
+            const card = header.closest('.card');
+            const body = card.querySelector('.card-body');
+            const icon = header.querySelector('.collapse-icon');
+            
+            // Toggle classes
+            card.classList.toggle('collapsed');
+            body.classList.toggle('collapsed');
+            
+            // Store state
+            const sectionId = card.querySelector('h3').textContent.toLowerCase().replace(/\s+/g, '-');
+            localStorage.setItem(`section-${sectionId}`, card.classList.contains('collapsed'));
+            
+            // Prevent event bubbling
+            event.stopPropagation();
+        }
+
+        document.getElementById('customRuleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const ruleName = document.getElementById('ruleName').value;
+            const elementType = document.getElementById('elementType').value;
+            const checkType = document.getElementById('checkType').value;
+            const severity = document.getElementById('severity').value;
+            const violationMessage = document.getElementById('violationMessage').value;
+
+            // Validation for checkType field
+            if (!checkType || checkType.trim() === '' || checkType.trim() === '.') {
+                alert('Please enter a valid check type for your custom rule.');
+                return;
+            }
+
+            const customRule = {
+                selector: elementType,
+                check: checkType,
+                message: violationMessage,
+                severity: severity
+            };
+
+            window.predefinedRules[ruleName] = customRule;
+            // Add to UI
+            const customRulesSection = document.getElementById('customRulesSection');
+            const customRulesContainer = document.getElementById('customRulesContainer');
+            customRulesSection.style.display = 'block';
+            // Create checkbox
+            const div = document.createElement('div');
+            div.className = 'form-check';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.className = 'form-check-input rule-select';
+            input.id = ruleName;
+            input.setAttribute('data-category', 'custom');
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = ruleName;
+            label.textContent = ruleName;
+            div.appendChild(input);
+            div.appendChild(label);
+            customRulesContainer.appendChild(div);
+            alert('Custom rule added successfully!');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
