@@ -1,0 +1,80 @@
+🛡️ DesignGuard – Bookmarkable UX Linter for Design System Violations
+📌 Overview
+DesignGuard is a lightweight, no-install UX linter built for secure enterprise environments where browser extensions are blocked. It allows developers to define custom design rules and generate a bookmarklet script that highlights violations in any live web application. It works with any design system—SALT UI, Material UI, Bootstrap, or custom.
+
+🎯 Problem Statement
+Developers often unintentionally misuse design system components or violate UX guidelines due to a lack of real-time feedback.
+
+🔒 In highly regulated environments, browser extensions are blocked—making it difficult to detect UX inconsistencies early in the development lifecycle.
+
+💡 Solution Summary
+DesignGuard provides a developer-centric way to lint the UI in real-time without relying on external tools or installations:
+
+Define rules visually (e.g., button:not([aria-label]) → “Missing ARIA label”)
+
+Generate a self-contained JavaScript bookmarklet
+
+Click the bookmark on any internal app → get real-time violation highlights and tooltips
+
+⚙️ Tech Architecture
+Component	Technology	Description
+Rule Builder UI	HTML + Vanilla JS	Web UI to define CSS-based rule sets
+Rule Engine	JS DOM Parser	Finds elements violating rules
+Output Generator	JS Composer	Converts rules into bookmarklet script
+Execution Layer	Bookmarklet (JS)	Injects UI hints into live apps
+Deployment	Internal Hosting	No backend; all client-side. Runs fully offline
+
+🧩 Key Features
+⚡️ Real-time DOM-based UX linting
+
+🔐 Runs in locked-down enterprise environments
+
+🧰 Custom rule creation via selectors
+
+🌐 Works with any design system: SALT, Material, Bootstrap, etc.
+
+🚫 No install, no internet access needed
+
+📎 Bookmark-based injection, safe for internal use
+
+📈 Business Impact
+Area	Impact
+Developer Experience	Fast feedback, improved UX ownership
+Design System Adoption	Reinforces consistent usage across teams
+QA/UX Review Cycles	Reduces last-minute visual bugs
+Scalability	Works in any app with HTML/CSS, no infra or devops needed
+
+🧭 Roadmap
+✅ Bookmarklet script generator
+
+✅ Rule builder interface
+
+🔄 Rule import/export
+
+🧩 Integration with VSCode for markup linting
+
+🔁 Auto-fix for common violations
+
+🧠 Optional AI-based rule suggester
+
+📚 Rule library per design system or team
+
+🖼️ System Flow Diagram
+css
+Copy
+Edit
+flowchart TD
+    A[Developer opens Rule Builder] --> B[Defines CSS selector + label]
+    B --> C[Generates Bookmarklet Script]
+    C --> D[Adds Bookmark to Browser]
+    D --> E[Clicks Bookmark on Internal App]
+    E --> F[Script Scans DOM]
+    F --> G[Highlights Violations with Tooltips]
+Use Mermaid in Confluence to render this directly.
+
+🧪 Sample Rule Definitions
+CSS Selector	Message
+button:not([aria-label])	Missing ARIA label
+.btn.red	Unauthorized color usage
+h1 + h3	Skipped heading level
+div[style*="font-size:"]	Avoid inline font sizing
